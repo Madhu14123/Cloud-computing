@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NoteKeeper</title>
+</head>
+<body>
+    <h1>NoteKeeper</h1>
+    <form action="/add_note" method="post">
+        <input type="text" name="title" placeholder="Title" size="50"/><br><br>
+        <textarea name="content" placeholder="Content" rows="5" cols="50"></textarea><br><br>
+        <button type="submit">Add Note</button>
+    </form>
+    <hr>
+    <h2>Saved Notes</h2>
+    <div id="notes"></div>
+    <script>
+        async function fetchNotes() {
+            let resp = await fetch('/notes');
+            let data = await resp.json();
+            let container = document.getElementById('notes');
+            container.innerHTML = '';
+            data.forEach(note => {
+                container.innerHTML += `<p><b>${note.title}</b>: ${note.content} <i>(${note.created_at})</i></p>`;
+            });
+        }
+        fetchNotes();
+        setInterval(fetchNotes, 5000);
+    </script>
+</body>
+</html>

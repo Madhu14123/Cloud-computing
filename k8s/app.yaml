@@ -1,0 +1,74 @@
+# FRONTEND
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: note-frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: note-frontend
+  template:
+    metadata:
+      labels:
+        app: note-frontend
+    spec:
+      containers:
+      - name: note-frontend
+        image: madhurya14/note-frontend:latest
+        ports:
+        - containerPort: 5000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: note-frontend
+spec:
+  type: NodePort
+  ports:
+    - port: 5000
+      targetPort: 5000
+      nodePort: 30001
+  selector:
+    app: note-frontend
+
+# BACKEND
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: note-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: note-backend
+  template:
+    metadata:
+      labels:
+        app: note-backend
+    spec:
+      containers:
+      - name: note-backend
+        image: madhurya14/note-backend:latest
+        ports:
+        - containerPort: 5000
+        env:
+          - name: DB_HOST
+            value: note-db
+          - name: DB_NAME
+            value: notes_db
+          - name: DB_USER
+            value: postgres
+          - name: DB_PASS
+            value: postgres
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: note-backend
+spec:
+  ports:
+    - port: 5000
+  selector:
+    app: note-backend
